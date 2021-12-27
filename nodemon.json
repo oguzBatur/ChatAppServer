@@ -1,0 +1,5 @@
+{
+    "watch": "src/app.ts",
+    "exec":"npx tsc && node build/app.js"
+    
+  }

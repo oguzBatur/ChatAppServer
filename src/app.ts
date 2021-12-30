@@ -34,7 +34,6 @@ app.get('/auth', async(req:Request, res:Response) => {
         if(token)
         {
             const verifyTheToken = jwt.verify(token, SECRET);
-            console.log(verifyTheToken);
             res.status(200).json({
                 name: verifyTheToken
             })
@@ -50,13 +49,19 @@ app.get('/auth', async(req:Request, res:Response) => {
 const server = app.listen(PORT, () => {
     console.log('The server is running on ', PORT);
 })
-    
 const io = new Server(server,{
     cors:{
-        origin: ["http://localhost:3000"]
-    }
+        origin: ["http://localhost:3000", "https://oguzbatur.github.io/Socket.io-Chat-App"]
+    },
+    transports:['websocket', 'polling'],
+    allowEIO3: true
 });
 
 io.on('connection', async(socket) => {
-    
+    socket.on('send-chat-message', message => {
+        console.log('Got Message');
+        socket.broadcast.emit('receive-chat-message', {...message});
+        socket.emit('receive-chat-message', {...message})
+    })
+
 })

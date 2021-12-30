@@ -41,7 +41,6 @@ app.get('/auth', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
         if (token) {
             const verifyTheToken = jsonwebtoken_1.default.verify(token, SECRET);
-            console.log(verifyTheToken);
             res.status(200).json({
                 name: verifyTheToken
             });
@@ -59,7 +58,14 @@ const server = app.listen(PORT, () => {
 const io = new socket_io_1.Server(server, {
     cors: {
         origin: ["http://localhost:3000"]
-    }
+    },
+    transports: ['websocket', 'polling'],
+    allowEIO3: true
 });
 io.on('connection', (socket) => __awaiter(void 0, void 0, void 0, function* () {
+    socket.on('send-chat-message', message => {
+        console.log('Got Message');
+        socket.broadcast.emit('receive-chat-message', Object.assign({}, message));
+        socket.emit('receive-chat-message', Object.assign({}, message));
+    });
 }));
